@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'InventoryApp',
-    'versatileimagefield',
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -82,7 +83,7 @@ WSGI_APPLICATION = 'Inventory.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "inventoryManagement_db",
+        "NAME": "ecommerceweb_db",
         "USER": "postgres",
         "PASSWORD": "1234",
         "HOST": "LOCALHOST",
@@ -131,34 +132,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-VERSATILEIMAGEFIELD_SETTINGS = {
-    'cache_length': 2592000,
-    'cache_name': 'versatileimagefield_cache',
-    'jpeg_resize_quality': 70,
-    'sized_directory_name': '__sized__',
-    'filtered_directory_name': '__filtered__',
-    'placeholder_directory_name': '__placeholder__',
-    'create_images_on_demand': True,
-    'image_key_post_processor': None,
-    'progressive_jpeg': False
-}
 
-VERSATILEIMAGEFIELD_RENDITION_KEY_SETS = {
-    'image_gallery': [
-        ('gallery_large', 'crop__800x450'),
-        ('gallery_square_small', 'crop__50x50')
-    ],
-    'primary_image_detail': [
-        ('hero', 'crop__600x283'),
-        ('social', 'thumbnail__800x800')
-    ],
-    'primary_image_list': [
-        ('list', 'crop__400x225'),
-    ],
-    'headshot': [
-        ('headshot_small', 'crop__150x175'),
-    ]
-}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -167,3 +141,23 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
 ]
+AUTH_USER_MODEL = 'InventoryApp.Customer'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.AllowAny',
+    # ),
+}
+
+# settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'fidakanoth@gmail.com'
+EMAIL_HOST_PASSWORD = 'Fida@01112002'
+DEFAULT_FROM_EMAIL = 'fidakanoth@gmail.com'
