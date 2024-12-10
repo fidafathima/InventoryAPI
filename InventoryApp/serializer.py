@@ -4,9 +4,7 @@ from InventoryApp.models import ProductDetails, Customer, Cart, Order, PaymentMe
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    ProductImage = serializers.ImageField(
-        max_length=None, use_url=True,
-    )
+
     class Meta:
         model=ProductDetails
         fields="__all__"
@@ -54,10 +52,10 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    deliver = DeliverySerializer()
-    user = LoginSerializer()
-    payment=PaymentSerializer()
-    product=ProductSerializer()
+    # delivery = DeliverySerializer()
+    # user = LoginSerializer()
+    # payment=PaymentSerializer()
+    # product = CartSerializer(many=True)
     class Meta:
         model=Order
         fields="__all__"

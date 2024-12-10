@@ -55,7 +55,7 @@ class Delivery(models.Model):
     status=models.CharField(max_length=10)
 
 class PaymentMethod(models.Model):
-
+        user=models.ForeignKey(Customer,on_delete=models.DO_NOTHING,default=1)
         PAYMENT_METHOD_CHOICES = [
             ('card', 'Card'),
             ('upi', 'UPI'),

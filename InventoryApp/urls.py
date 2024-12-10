@@ -18,7 +18,8 @@ urlpatterns = [
    path('address',views.address.as_view(),name='address'),
    path('ChangeAddress/<int:id>/',views.ChangeAddress.as_view(),name='ChangeAddress'),
    path('CheckOut',views.CheckOut.as_view(),name='CheckOut'),
-   # path('upi/<int:id>/',views.upi.as_view(),name='upi')
+   path('payment/<int:id>/',views.payment.as_view(),name='payment'),
+   path('orders',views.orders.as_view(),name='orders')
 
 
 ]

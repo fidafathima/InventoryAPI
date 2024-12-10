@@ -50,7 +50,7 @@ class LoginView(views.APIView):
 
                 elif user.is_customer:
 
-                    return Response({'user': {'id': user.id, 'username': user.username},'access':{'token': token.key}},status=status.HTTP_200_OK)
+                    return Response({'user': {'id': user.id, 'username': user.username,'email':user.email},'access':{'token': token.key}},status=status.HTTP_200_OK)
 
                 else:
                     return Response({'error': 'Invalid credentials'},status=status.HTTP_404_NOT_FOUND)
@@ -211,32 +211,42 @@ class address(APIView):
     def get(self,request):
         user = request.user
         address1 = Delivery.objects.filter(user=user)
+        payment = PaymentMethod.objects.filter(user=user)
         serializer=DeliverySerializer(address1,many=True)
+        serializer2=PaymentSerializer(payment,many=True)
         return Response({
                 "delivery": serializer.data,
-            })
+                "payment": serializer2.data
+
+        })
 
 
 
 class CheckOut(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
-        user=request.user
-        data=Cart.objects.filter(user=user)
-        address1 = Delivery.objects.get(user=user)
-        payment1 = PaymentMethod.objects.get(user=user)
-        cart = [i for i in data]
-        order = Order.objects.create(user=user, delivery=address1, payment=payment1)
-        if cart:
-            for i in cart:
-                if i.status == "0":
-                    order.product.add(i)
-                    i.item.quantity = i.item.quantity - int(i.quantity0)
-                    i.item.save()
-                    i.status = 1
-                    i.save()
-        serializer=OrderSerializer(order,many=True)
-        return Response(serializer.data)
+        serializer = OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # user=request.user
+        # data=Cart.objects.filter(user=user)
+        # address1 = Delivery.objects.get(user=user)
+        # payment1 = PaymentMethod.objects.get(user=user)
+        # cart = [i for i in data]
+        # order = Order.objects.create(user=user, delivery=address1, payment=payment1)
+        # if cart:
+        #     for i in cart:
+        #         if i.status == "0":
+        #             order.product.add(i)
+        #             i.item.TotalStock = i.item.quantity - int(i.quantity0)
+        #             i.item.save()
+        #             i.status = 1
+        #             i.save()
+        # serializer=OrderSerializer(order,many=True)
+        # return Response(serializer.data)
 
 
 class ChangeAddress(APIView):
@@ -251,19 +261,21 @@ class ChangeAddress(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class payment(APIView):
+    permission_classes = [IsAuthenticated]
 
-# class upi(APIView):
-#     # permission_classes = [IsAuthenticated]
-#
-#     def get_object(self, id):
-#         try:
-#             return PaymentMethod.objects.get(id=id)
-#         except PaymentMethod.DoesNotExist:
-#             raise Http404
-#
-#     def post(self,request,id):
-#         item=self.get_object(id)
-#         item.UPI_Payment=True
-#         item.save()
-#         serializer=PaymentSerializer(item)
-#         return Response(serializer.data,status=status.HTTP_201_CREATED)
+    def put(self,request,id):
+        payment = PaymentMethod.objects.get(id=id)
+        serializer = PaymentSerializer(payment,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+
+class orders(APIView):
+    def get(self,request):
+        data=Order.objects.all()
+        print(data)
+        serializer=OrderSerializer(data,many=True)
+        return Response(serializer.data)
